@@ -1,0 +1,1804 @@
+{
+  "_description": "新华医院成本分析模块 Excel->PPT 数据映射配置",
+  "_convention": "列号0-based。cols每项为[ppt_col, xl_col]。前端sheet label_col=1, 附表label_col=0。",
+  "excel_sources": {
+    "医疗成本": {
+      "sheet": "医疗成本",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "人员经费": {
+      "sheet": "人员经费",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "水电煤": {
+      "sheet": "水电煤",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "预算完成情况": {
+      "sheet": "预算完成情况",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "收支结余": {
+      "sheet": "收支结余",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "商品服务": {
+      "sheet": "商品服务",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "物业管理": {
+      "sheet": "物业管理",
+      "needs_wan": false,
+      "label_col": 8
+    },
+    "维修护费": {
+      "sheet": "维修护费",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "后勤维修": {
+      "sheet": "后勤维修",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "卫生材料": {
+      "sheet": "卫生材料",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "当月附表1": {
+      "sheet": "当月附表1",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "当月附表2": {
+      "sheet": "当月附表2",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "当月附表3": {
+      "sheet": "当月附表3",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "上年同期附表2": {
+      "sheet": "上年同期附表2",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "上年同期附表3": {
+      "sheet": "上年同期附表3",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "当年数据表": {
+      "sheet": "当年累计数据表",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "去年数据表": {
+      "sheet": "去年累计数据表",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "当年连续累计": {
+      "sheet": "当年连续累计数据表",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "当年累计奉贤": {
+      "sheet": "当年累计数据表奉贤",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "当月附表2-成本": {
+      "sheet": "当月附表2",
+      "needs_wan": true,
+      "label_col": 3
+    },
+    "当月奉贤附表2-成本": {
+      "sheet": "当月奉贤附表2",
+      "needs_wan": true,
+      "label_col": 3
+    },
+    "上年同期附表2-成本": {
+      "sheet": "上年同期附表2",
+      "needs_wan": true,
+      "label_col": 3
+    },
+    "当月附表1-奉贤": {
+      "sheet": "当月奉贤附表1",
+      "needs_wan": true,
+      "label_col": 0
+    },
+    "收支结余-src": {
+      "sheet": "收支结余",
+      "needs_wan": false,
+      "label_col": 1
+    },
+    "上年同期附表1": {
+      "sheet": "上年同期附表1",
+      "needs_wan": true,
+      "label_col": 0
+    }
+  },
+  "slides": {
+    "4": {
+      "desc": "收支结余情况表",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "医疗收入",
+          "cols": [
+            { "ppt": 1, "source": "当年数据表", "xl_label": "小计", "xl": 14 },
+            { "ppt": 2, "source": "当年累计奉贤", "xl_label": "小计", "xl": 14 },
+            { "ppt": 3, "source": "去年数据表", "xl_label": "小计", "xl": 14 },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "减：医疗成本",
+          "cols": [
+            { "ppt": 1, "source": "当月附表2-成本", "xl_label": "一、医疗成本", "xl": 1 },
+            { "ppt": 2, "source": "当月奉贤附表2-成本", "xl_label": "一、医疗成本", "xl": 1 },
+            { "ppt": 3, "source": "上年同期附表2-成本", "xl_label": "一、医疗成本", "xl": 1 },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "医疗服务盈余",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "subtract_refs", "a": { "compute": { "type": "add_refs", "a": { "source": "当年数据表", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "收支结余-src", "xl_label": "加：财政基本拨款收入", "xl_col": 1 } } }, "b": { "source": "当月附表2-成本", "xl_label": "一、医疗成本", "xl_col": 1 } } },
+            { "ppt": 2, "compute": { "type": "subtract_refs", "a": { "compute": { "type": "add_refs", "a": { "source": "当年累计奉贤", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "收支结余-src", "xl_label": "加：财政基本拨款收入", "xl_col": 2 } } }, "b": { "source": "当月奉贤附表2-成本", "xl_label": "一、医疗成本", "xl_col": 1 } } },
+            { "ppt": 3, "compute": { "type": "subtract_refs", "a": { "compute": { "type": "add_refs", "a": { "source": "去年数据表", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "收支结余-src", "xl_label": "加：财政基本拨款收入", "xl_col": 3 } } }, "b": { "source": "上年同期附表2-成本", "xl_label": "一、医疗成本", "xl_col": 1 } } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "其他盈余",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "subtract_refs", "a": { "source": "当月附表1", "xl_label": "一、医疗业务盈余", "xl_col": 1 }, "b": { "compute": { "type": "subtract_refs", "a": { "compute": { "type": "add_refs", "a": { "source": "当年数据表", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "收支结余-src", "xl_label": "加：财政基本拨款收入", "xl_col": 1 } } }, "b": { "source": "当月附表2-成本", "xl_label": "一、医疗成本", "xl_col": 1 } } } } },
+            { "ppt": 2, "compute": { "type": "subtract_refs", "a": { "source": "当月附表1-奉贤", "xl_label": "一、医疗业务盈余", "xl_col": 1 }, "b": { "compute": { "type": "subtract_refs", "a": { "compute": { "type": "add_refs", "a": { "source": "当年累计奉贤", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "收支结余-src", "xl_label": "加：财政基本拨款收入", "xl_col": 2 } } }, "b": { "source": "当月奉贤附表2-成本", "xl_label": "一、医疗成本", "xl_col": 1 } } } } },
+            { "ppt": 3, "compute": { "type": "subtract_refs", "a": { "source": "上年同期附表1", "xl_label": "一、医疗业务盈余", "xl_col": 1 }, "b": { "compute": { "type": "subtract_refs", "a": { "compute": { "type": "add_refs", "a": { "source": "去年数据表", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "收支结余-src", "xl_label": "加：财政基本拨款收入", "xl_col": 3 } } }, "b": { "source": "上年同期附表2-成本", "xl_label": "一、医疗成本", "xl_col": 1 } } } } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "收支结余",
+          "cols": [
+            { "ppt": 1, "source": "当月附表1", "xl_label": "一、医疗业务盈余", "xl": 1 },
+            { "ppt": 2, "source": "当月附表1-奉贤", "xl_label": "一、医疗业务盈余", "xl": 1 },
+            { "ppt": 3, "source": "上年同期附表1", "xl_label": "一、医疗业务盈余", "xl": 1 },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 8",
+          "template": "2026年4月，医院收支结余为{bal_apr}万元，其中杨浦院区为{yp_apr}万元，奉贤院区为{fx_apr}万元。\n2026年1-4月，医院收支结余为{bal_ytd}万元，其中杨浦院区为{yp_ytd}万元，奉贤院区为{fx_ytd}万元。",
+          "vars": {
+            "bal_apr": { "source": "当月附表1", "xl_label": "一、医疗业务盈余", "xl_col": 1 },
+            "fx_apr": { "source": "当月附表1-奉贤", "xl_label": "一、医疗业务盈余", "xl_col": 1 },
+            "yp_apr": { "compute": { "type": "subtract_excel", "a": { "source": "当月附表1", "xl_label": "一、医疗业务盈余", "xl_col": 1 }, "b": { "source": "当月附表1-奉贤", "xl_label": "一、医疗业务盈余", "xl_col": 1 } } },
+            "bal_ytd": { "source": "当月附表1", "xl_label": "一、医疗业务盈余", "xl_col": 2 },
+            "fx_ytd": { "source": "当月附表1-奉贤", "xl_label": "一、医疗业务盈余", "xl_col": 2 },
+            "yp_ytd": { "compute": { "type": "subtract_excel", "a": { "source": "当月附表1", "xl_label": "一、医疗业务盈余", "xl_col": 2 }, "b": { "source": "当月附表1-奉贤", "xl_label": "一、医疗业务盈余", "xl_col": 2 } } }
+          },
+          "format_overrides": {
+            "bal_apr": "int",
+            "fx_apr": "int",
+            "yp_apr": "int",
+            "bal_ytd": "int",
+            "fx_ytd": "int",
+            "yp_ytd": "int"
+          }
+        }
+      ]
+    },
+    "50": {
+      "desc": "医疗成本结构表",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年",
+        "占 比%",
+        "奉贤院区",
+        "2025年",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "人员经费",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        {
+          "label": "药品费",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        {
+          "label": "卫生材料费",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        {
+          "label": "折旧/摊销",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        {
+          "label": "医疗风险基金",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        {
+          "label": "商品和服务费",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        },
+        {
+          "label": "医疗成本合计",
+          "source": "医疗成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ]
+          ]
+        }
+      ]
+    },
+    "51": {
+      "desc": "人员经费明细",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "医疗服务收入",
+          "source": "人员经费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "人员经费",
+          "source": "人员经费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "工资总额",
+          "source": "人员经费",
+          "xl_label": "其中：工资总额",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "基本工资等",
+          "source": "人员经费",
+          "xl_label": "其中：基本工资等",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "绩效工资",
+          "source": "人员经费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "社保公积金",
+          "source": "人员经费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 8",
+          "template": "2026年4月，新华医院人员经费支出{personnel}万元，同比增幅{personnel_yoy}，其中绩效工资同比增幅{perf_yoy}，基本工资等同比降幅{basepay_yoy}，主要原因是去年同期一次性将春节、元旦、清明等节假日的加班费用计入基本工资。",
+          "vars": {
+            "personnel": { "source": "人员经费", "xl_label": "人员经费", "xl_col": 1 },
+            "personnel_yoy": { "source": "人员经费", "xl_label": "人员经费", "xl_col": 5 },
+            "perf_yoy": { "source": "人员经费", "xl_label": "绩效工资", "xl_col": 5 },
+            "basepay_yoy": { "source": "人员经费", "xl_label": "其中：基本工资等", "xl_col": 5 }
+          },
+          "format_overrides": {
+            "personnel": "int",
+            "personnel_yoy": "pct_1dp",
+            "perf_yoy": "pct_1dp",
+            "basepay_yoy": "pct_abs_1dp"
+          }
+        }
+      ]
+    },
+    "52": {
+      "desc": "卫生材料费明细",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "卫生材料收入",
+          "source": "卫生材料",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "卫生材料费",
+          "source": "卫生材料",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "可收费",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "subtract_refs", "a": { "source": "卫生材料", "xl_label": "卫生材料费", "xl_col": 1 }, "b": { "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "needs_wan": true } } } },
+            { "ppt": 2, "compute": { "type": "subtract_refs", "a": { "source": "卫生材料", "xl_label": "卫生材料费", "xl_col": 2 }, "b": { "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "campus": "奉贤院区", "needs_wan": true } } } },
+            { "ppt": 3, "compute": { "type": "subtract_refs", "a": { "source": "卫生材料", "xl_label": "卫生材料费", "xl_col": 3 }, "b": { "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "needs_wan": true } } } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "不可收费",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "needs_wan": true } },
+            { "ppt": 2, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "campus": "奉贤院区", "needs_wan": true } },
+            { "ppt": 3, "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "needs_wan": true } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "检验试剂",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "needs_wan": true } },
+            { "ppt": 2, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "campus": "奉贤院区", "needs_wan": true } },
+            { "ppt": 3, "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "subject_contains": "化验材料费", "needs_wan": true } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "不可收费卫生材料",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "subtract_refs", "a": { "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "needs_wan": true } }, "b": { "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "needs_wan": true } } } },
+            { "ppt": 2, "compute": { "type": "subtract_refs", "a": { "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "campus": "奉贤院区", "needs_wan": true } }, "b": { "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "campus": "奉贤院区", "needs_wan": true } } } },
+            { "ppt": 3, "compute": { "type": "subtract_refs", "a": { "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "needs_wan": true } }, "b": { "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "subject_contains": "化验材料费", "needs_wan": true } } } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 8",
+          "template": "2026年4月，卫生材料费支出{material_cost}万元，同比增幅{material_yoy}，其中可收费卫生材料同比增长{chargeable_yoy}，主要是由于业务量增长引起卫生材料收入增长，可收费材料费用因此增长。",
+          "vars": {
+            "material_cost": { "source": "卫生材料", "xl_label": "卫生材料费", "xl_col": 1 },
+            "material_yoy": { "source": "卫生材料", "xl_label": "卫生材料费", "xl_col": 5 },
+            "chargeable_yoy": { "source": "卫生材料", "xl_label": "其中：可收费", "xl_col": 5 }
+          },
+          "format_overrides": {
+            "material_cost": "int",
+            "material_yoy": "pct_1dp",
+            "chargeable_yoy": "pct_1dp"
+          }
+        }
+      ]
+    },
+    "53": {
+      "desc": "检验试剂成本与化验收入",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "检验试剂成本",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "needs_wan": true } },
+            { "ppt": 2, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "campus": "奉贤院区", "needs_wan": true } },
+            { "ppt": 3, "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "subject_contains": "化验材料费", "needs_wan": true } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "医学检验科",
+          "cols": [
+            { "ppt": 1, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "dept_contains": "医学检验科", "needs_wan": true } },
+            { "ppt": 2, "compute": { "type": "detail_sum", "year": 2026, "chargeable": false, "subject_contains": "化验材料费", "dept_contains": "医学检验科", "campus": "奉贤院区", "needs_wan": true } },
+            { "ppt": 3, "compute": { "type": "detail_sum", "year": 2025, "chargeable": false, "subject_contains": "化验材料费", "dept_contains": "医学检验科", "needs_wan": true } },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "化验收入",
+          "source": "卫生材料",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "成本收入比",
+          "source": "卫生材料",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "门急诊人次",
+          "cols": [
+            { "ppt": 1, "source": "当年数据表", "xl_label": "小计", "xl": 6, "format": "2dp" },
+            { "ppt": 2, "source": "卫生材料", "xl_label": "门急诊人次", "xl": 2, "format": "2dp" },
+            { "ppt": 3, "source": "卫生材料", "xl_label": "门急诊人次", "xl": 3, "format": "2dp" },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        },
+        {
+          "label": "住院人次",
+          "cols": [
+            { "ppt": 1, "source": "当年数据表", "xl_label": "小计", "xl": 7, "format": "2dp" },
+            { "ppt": 2, "source": "卫生材料", "xl_label": "住院人次", "xl": 2, "format": "2dp" },
+            { "ppt": 3, "source": "卫生材料", "xl_label": "住院人次", "xl": 3, "format": "2dp" },
+            { "ppt": 4, "compute": { "type": "subtract", "a_col": 1, "b_col": 3 } },
+            { "ppt": 5, "compute": { "type": "pct_diff", "a_col": 1, "b_col": 3 } }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 8",
+          "template": "2026年4月相较2025年同期，检验试剂成本增长{reagent_diff}万元，成本收入比重为{ratio}，同比增加{ratio_pp}个百分点。奉贤院区化验成本收入比为{fx_ratio}。",
+          "vars": {
+            "reagent_diff": { "source": "卫生材料", "xl_label": "其中：检验试剂", "xl_col": 4 },
+            "ratio": { "source": "卫生材料", "xl_label": "成本收入比重", "xl_col": 1 },
+            "ratio_pp": { "source": "卫生材料", "xl_label": "成本收入比重", "xl_col": 4 },
+            "fx_ratio": { "source": "卫生材料", "xl_label": "成本收入比重", "xl_col": 2 }
+          },
+          "format_overrides": {
+            "reagent_diff": "int",
+            "ratio": "pct_1dp",
+            "ratio_pp": "pp_1dp",
+            "fx_ratio": "pct_1dp"
+          }
+        }
+      ]
+    },
+    "54": {
+      "desc": "商品和服务费用",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "商品服务",
+          "source": "商品服务",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "能源成本",
+          "source": "商品服务",
+          "xl_label": "其中：能源成本",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "维修护费",
+          "source": "商品服务",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "物业管理费",
+          "source": "商品服务",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "委托业务费",
+          "source": "商品服务",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "劳务费",
+          "source": "商品服务",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "租赁费",
+          "source": "商品服务",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "其他费用",
+          "source": "商品服务",
+          "xl_label": "其他",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 7",
+          "template": "2026年4月，商品和服务费支出{goods_total}万元，同比增长{goods_diff}万元。变动因素如下：1、能源成本同比减少{energy_diff_abs}万元。2、维修护费同比减少{repair_diff_abs}万元。3、物业管理费同比增长{property_diff}万元。4、委托业务费同比增长{commission_diff}万元，其中外送检测费同比增长22万元，科研匹配经费中的检测费用同比增长232万元。5、劳务费增长{labor_diff}万元，主要是奉贤一口价人员成本同比增长68万元，另支付申康2025-2026年总会计师薪酬170万元，去年同期支付金额为95万元。6、租赁费同比上涨{rental_diff}万元，主要是本月支付3个月的奉贤租房费用44万元。 7、其他费用同比上涨{other_diff}万元，主要是支付吉爱家庭及吉晨卫生的患者照护相关款项544万元。",
+          "vars": {
+            "goods_total": { "source": "商品服务", "xl_label": "商品服务", "xl_col": 1 },
+            "goods_diff": { "source": "商品服务", "xl_label": "商品服务", "xl_col": 4 },
+            "energy_diff_abs": { "source": "商品服务", "xl_label": "其中：能源成本", "xl_col": 4 },
+            "repair_diff_abs": { "source": "商品服务", "xl_label": "维修护费", "xl_col": 4 },
+            "property_diff": { "source": "商品服务", "xl_label": "物业管理费", "xl_col": 4 },
+            "commission_diff": { "source": "商品服务", "xl_label": "委托业务费", "xl_col": 4 },
+            "labor_diff": { "source": "商品服务", "xl_label": "劳务费", "xl_col": 4 },
+            "rental_diff": { "source": "商品服务", "xl_label": "租赁费", "xl_col": 4 },
+            "other_diff": { "source": "商品服务", "xl_label": "其他", "xl_col": 4 }
+          },
+          "format_overrides": {
+            "goods_total": "int",
+            "goods_diff": "int",
+            "energy_diff_abs": "int",
+            "repair_diff_abs": "int",
+            "property_diff": "int",
+            "commission_diff": "int",
+            "labor_diff": "int",
+            "rental_diff": "int",
+            "other_diff": "int"
+          }
+        }
+      ]
+    },
+    "55": {
+      "desc": "能源成本",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年1-4月"
+      ],
+      "rows": [
+        {
+          "label": "能耗成本",
+          "source": "水电煤",
+          "xl_label": "能耗成本",
+          "cols": [
+            { "ppt": 1, "xl": 1 },
+            { "ppt": 2, "xl": 2 },
+            { "ppt": 3, "compute": { "type": "subtract", "a_col": 1, "b_col": 2 } },
+            { "ppt": 4, "xl": 3 },
+            { "ppt": 5, "xl": 4 },
+            { "ppt": 6, "xl": 5 }
+          ]
+        },
+        {
+          "label": "水费",
+          "source": "水电煤",
+          "xl_label": "其中：水费",
+          "cols": [
+            { "ppt": 1, "xl": 1 },
+            { "ppt": 2, "xl": 2 },
+            { "ppt": 3, "compute": { "type": "subtract", "a_col": 1, "b_col": 2 } },
+            { "ppt": 4, "xl": 3 },
+            { "ppt": 5, "xl": 4 },
+            { "ppt": 6, "xl": 5 }
+          ]
+        },
+        {
+          "label": "电费",
+          "source": "水电煤",
+          "xl_label": "电费",
+          "cols": [
+            { "ppt": 1, "xl": 1 },
+            { "ppt": 2, "xl": 2 },
+            { "ppt": 3, "compute": { "type": "subtract", "a_col": 1, "b_col": 2 } },
+            { "ppt": 4, "xl": 3 },
+            { "ppt": 5, "xl": 4 },
+            { "ppt": 6, "xl": 5 }
+          ]
+        },
+        {
+          "label": "燃气费",
+          "source": "水电煤",
+          "xl_label": "燃气费",
+          "cols": [
+            { "ppt": 1, "xl": 1 },
+            { "ppt": 2, "xl": 2 },
+            { "ppt": 3, "compute": { "type": "subtract", "a_col": 1, "b_col": 2 } },
+            { "ppt": 4, "xl": 3 },
+            { "ppt": 5, "xl": 4 },
+            { "ppt": 6, "xl": 5 }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 7",
+          "template": "2026年1-4月，能源成本支出{energy_total}万元，同比增幅{energy_yoy}，其中杨浦院区同比减少{fx_energy_diff_abs}万元，降幅12.1%。水费同比增长{water_diff}万元，电费同比增长{electric_diff}万元，燃气费同比减少{gas_diff_abs}万元。",
+          "vars": {
+            "energy_total": { "source": "水电煤", "xl_label": "能耗成本", "xl_col": 1 },
+            "energy_yoy": { "source": "水电煤", "xl_label": "能耗成本", "xl_col": 5 },
+            "water_diff": { "source": "水电煤", "xl_label": "其中：水费", "xl_col": 4 },
+            "electric_diff": { "source": "水电煤", "xl_label": "电费", "xl_col": 4 },
+            "gas_diff_abs": { "source": "水电煤", "xl_label": "燃气费", "xl_col": 4 },
+            "fx_energy_diff_abs": { "compute": { "type": "subtract_excel", "a": { "source": "水电煤", "xl_label": "能耗成本", "xl_col": 4 }, "b": { "source": "水电煤", "xl_label": "其中：水费", "xl_col": 4 } } }
+          },
+          "format_overrides": {
+            "energy_total": "int",
+            "energy_yoy": "pct_1dp",
+            "water_diff": "int",
+            "electric_diff": "int",
+            "gas_diff_abs": "int",
+            "fx_energy_diff_abs": "int"
+          }
+        }
+      ]
+    },
+    "56": {
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "物业管理费",
+          "source": "物业管理",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "保安管理费",
+          "source": "物业管理",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "运送服务费",
+          "source": "物业管理",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "保洁服务费",
+          "source": "物业管理",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "被服洗涤费",
+          "source": "物业管理",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "物业其他",
+          "source": "物业管理",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 7",
+          "template": "2026年4月，物业管理费支出{property_total}万元，同比增幅{property_yoy}。其中，保安管理费、运送服务费、被服洗涤费共增长53万元，主要原因为奉贤院区相关成本的增长。保洁服务费同比增长{cleaning_diff}万元，一部分是由于每月奉贤成本增长111万元，每月杨浦成本增长51万元，另一部分是由于本月支付了因预算不足推迟支付的去年10月份的剩余保洁费用148万元。",
+          "vars": {
+            "property_total": { "source": "物业管理", "xl_label": "物业管理费", "xl_col": 1 },
+            "property_yoy": { "source": "物业管理", "xl_label": "物业管理费", "xl_col": 5 },
+            "cleaning_diff": { "source": "物业管理", "xl_label": "保洁服务费", "xl_col": 4 }
+          },
+          "format_overrides": {
+            "property_total": "int",
+            "property_yoy": "pct_1dp",
+            "cleaning_diff": "int"
+          }
+        }
+      ]
+    },
+    "57": {
+      "desc": "维修护费",
+      "header_row": 0,
+      "headers": [
+        "项  目",
+        "2026年4月",
+        "奉贤院区",
+        "2025年4月",
+        "增减额",
+        "增减率"
+      ],
+      "rows": [
+        {
+          "label": "维修费",
+          "source": "维修护费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "网络维修",
+          "source": "维修护费",
+          "xl_label": "其中：网络维修",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "设备维修",
+          "source": "维修护费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "房屋维修",
+          "source": "维修护费",
+          "xl_label": "其中：房屋维修",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        },
+        {
+          "label": "后勤维修",
+          "source": "维修护费",
+          "cols": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 7",
+          "template": "2026年4月，维修护费支出{repair_total}万元，同比降幅{repair_yoy_abs}。网络维修费增加{network_diff}万元；设备维修费增加{equipment_diff}万元，同比增幅{equipment_yoy}，2026年柯渡每月奉贤院区计提费用为12万元 。后勤维修费降低{logistics_diff_abs}万元，同比降幅{logistics_yoy_abs}。房屋维修费降低{building_diff_abs}万元。",
+          "vars": {
+            "repair_total": { "source": "维修护费", "xl_label": "维修费", "xl_col": 1 },
+            "repair_yoy_abs": { "source": "维修护费", "xl_label": "维修费", "xl_col": 5 },
+            "network_diff": { "source": "维修护费", "xl_label": "其中：网络维修", "xl_col": 4 },
+            "equipment_diff": { "source": "维修护费", "xl_label": "设备维修", "xl_col": 4 },
+            "equipment_yoy": { "source": "维修护费", "xl_label": "设备维修", "xl_col": 5 },
+            "logistics_diff_abs": { "source": "维修护费", "xl_label": "后勤维修", "xl_col": 4 },
+            "logistics_yoy_abs": { "source": "维修护费", "xl_label": "后勤维修", "xl_col": 5 },
+            "building_diff_abs": { "source": "维修护费", "xl_label": "其中：房屋维修", "xl_col": 4 }
+          },
+          "format_overrides": {
+            "repair_total": "int",
+            "repair_yoy_abs": "pct_abs_1dp",
+            "network_diff": "int",
+            "equipment_diff": "int",
+            "equipment_yoy": "pct_1dp",
+            "logistics_diff_abs": "int",
+            "logistics_yoy_abs": "pct_abs_1dp",
+            "building_diff_abs": "int"
+          }
+        }
+      ]
+    },
+    "59": {
+      "desc": "卫生材料综合分析",
+      "header_row": 1,
+      "headers": [
+        "2026年4月",
+        "2025年4月",
+        "同比"
+      ],
+      "rows": []
+    },
+    "65": {
+      "desc": "预算完成情况",
+      "header_row": 1,
+      "headers": [
+        "核定数",
+        "执行数",
+        "执行率",
+        "较时间节点比较"
+      ],
+      "rows": [
+        {
+          "label": "医疗收入",
+          "source": "预算完成情况",
+          "xl_label": "医疗收入",
+          "cols": [
+            {
+              "ppt": 1,
+              "xl": 1
+            },
+            {
+              "ppt": 2,
+              "source": "当年连续累计",
+              "xl_label": "小计",
+              "xl": 14
+            },
+            {
+              "ppt": 3,
+              "compute": {
+                "type": "divide",
+                "a_col": 2,
+                "b_col": 1
+              }
+            },
+            {
+              "ppt": 4,
+              "compute": {
+                "type": "time_node_diff",
+                "exec_rate_col": 3
+              }
+            }
+          ]
+        },
+        {
+          "label": "医疗成本",
+          "source": "预算完成情况",
+          "xl_label": "医疗成本",
+          "cols": [
+            {
+              "ppt": 1,
+              "xl": 1
+            },
+            {
+              "ppt": 2,
+              "source": "当月附表3",
+              "xl_label": "医疗成本合计",
+              "xl": 2
+            },
+            {
+              "ppt": 3,
+              "compute": {
+                "type": "divide",
+                "a_col": 2,
+                "b_col": 1
+              }
+            },
+            {
+              "ppt": 4,
+              "compute": {
+                "type": "time_node_diff",
+                "exec_rate_col": 3
+              }
+            }
+          ]
+        },
+        {
+          "label": "工资总额",
+          "source": "预算完成情况",
+          "xl_label": "工资总额",
+          "cols": [
+            {
+              "ppt": 1,
+              "xl": 1
+            },
+            {
+              "ppt": 2,
+              "compute": {
+                "type": "sum",
+                "needs_wan": true,
+                "parts": [
+                  {
+                    "source": "当月附表3",
+                    "xl_label": "基本工资",
+                    "xl_col": 2
+                  },
+                  {
+                    "source": "当月附表3",
+                    "xl_label": "津贴补贴",
+                    "xl_col": 2
+                  },
+                  {
+                    "source": "当月附表3",
+                    "xl_label": "伙食补助费",
+                    "xl_col": 2
+                  },
+                  {
+                    "source": "当月附表3",
+                    "xl_label": "绩效工资",
+                    "xl_col": 2
+                  },
+                  {
+                    "source": "当月附表3",
+                    "xl_label": "其他工资福利支出",
+                    "xl_col": 2
+                  }
+                ]
+              }
+            },
+            {
+              "ppt": 3,
+              "compute": {
+                "type": "divide",
+                "a_col": 2,
+                "b_col": 1
+              }
+            },
+            {
+              "ppt": 4,
+              "compute": {
+                "type": "time_node_diff",
+                "exec_rate_col": 3
+              }
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "shape_name": "矩形 13",
+          "template": "2026年1-4月，医疗收入预算执行率为{revenue_rate}，低于时间节点预算执行率{revenue_diff_pp}个百分点；医疗成本预算执行率为{cost_rate} ，高于时间节点预算执行率{cost_diff_pp}个百分点；工资总额预算执行率为{wage_rate}，高于时间节点{wage_diff_pp}个百分点。调整年终奖因素后，工资总额预算执行率为32.6%，低于时间节点进度0.7个百分点。",
+          "vars": {
+            "revenue_rate": { "compute": { "type": "divide_excel", "a": { "source": "当年连续累计", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "预算完成情况", "xl_label": "医疗收入", "xl_col": 1 } } },
+            "revenue_diff_pp": { "compute": { "type": "time_node_diff_excel", "a": { "source": "当年连续累计", "xl_label": "小计", "xl_col": 14 }, "b": { "source": "预算完成情况", "xl_label": "医疗收入", "xl_col": 1 } } },
+            "cost_rate": { "compute": { "type": "divide_excel", "a": { "source": "当月附表3", "xl_label": "医疗成本合计", "xl_col": 2 }, "b": { "source": "预算完成情况", "xl_label": "医疗成本", "xl_col": 1 } } },
+            "cost_diff_pp": { "compute": { "type": "time_node_diff_excel", "a": { "source": "当月附表3", "xl_label": "医疗成本合计", "xl_col": 2 }, "b": { "source": "预算完成情况", "xl_label": "医疗成本", "xl_col": 1 } } },
+            "wage_rate": { "compute": { "type": "divide_excel", "a": { "compute": { "type": "sum_excel", "needs_wan": true, "parts": [ { "source": "当月附表3", "xl_label": "基本工资", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "津贴补贴", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "伙食补助费", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "绩效工资", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "其他工资福利支出", "xl_col": 2 } ] } }, "b": { "source": "预算完成情况", "xl_label": "工资总额", "xl_col": 1 } } },
+            "wage_diff_pp": { "compute": { "type": "time_node_diff_excel", "a": { "compute": { "type": "sum_excel", "needs_wan": true, "parts": [ { "source": "当月附表3", "xl_label": "基本工资", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "津贴补贴", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "伙食补助费", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "绩效工资", "xl_col": 2 }, { "source": "当月附表3", "xl_label": "其他工资福利支出", "xl_col": 2 } ] } }, "b": { "source": "预算完成情况", "xl_label": "工资总额", "xl_col": 1 } } }
+          },
+          "format_overrides": {
+            "revenue_rate": "pct_1dp",
+            "revenue_diff_pp": "pp_1dp",
+            "cost_rate": "pct_1dp",
+            "cost_diff_pp": "pp_1dp",
+            "wage_rate": "pct_1dp",
+            "wage_diff_pp": "pp_1dp"
+          }
+        }
+      ]
+    },
+    "75": {
+      "desc": "成本指标目标完成情况",
+      "header_row": 0,
+      "headers": [
+        "归口部门",
+        "指标",
+        "2026年目标"
+      ],
+      "rows": []
+    }
+  }
+}
