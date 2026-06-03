@@ -1,0 +1,146 @@
+{
+  "_description": "物业管理费及维修费分类映射 — 从物业及维修明细Excel到分析底稿",
+
+  "format_detection": {
+    "2026": {
+      "_note": "2026年4月及之后的物业明细文件格式",
+      "header_keyword": "年",
+      "header_row": 3,
+      "category_col": 6,
+      "campus_col": 7,
+      "amount_col": 10,
+      "code_col": 3,
+      "name_col": 4,
+      "data_start_row": 5,
+      "campus_map": { "杨浦院区": "杨浦", "奉贤院区": "奉贤" }
+    },
+    "2025": {
+      "_note": "2025年及之前的物业明细文件格式（上年同期）",
+      "header_keyword": "科目代码",
+      "header_row": 2,
+      "category_col": 11,
+      "campus_col": 8,
+      "amount_col": 12,
+      "code_col": 0,
+      "name_col": 1,
+      "data_start_row": 3,
+      "category_prefix": "运营成本:物业管理_",
+      "maintenance_category_prefix": "运营成本:维修维护_",
+      "campus_prefix": "分院:",
+      "campus_map": { "杨浦院区": "杨浦" }
+    }
+  },
+
+  "categories": [
+    { "keywords": ["保安管理服务费"], "label": "保安管理", "left_row": 7, "right_row": 7 },
+    { "keywords": ["保洁服务费", "保洁服务"], "label": "保洁服务", "left_row": 9, "right_row": 9 },
+    { "keywords": ["生活垃圾清运费"], "label": "垃圾清运", "left_row": 13 },
+    { "keywords": ["医疗废弃物处置费"], "label": "医废处置", "left_row": 15 },
+    { "keywords": ["医疗废物收运费"], "label": "医废收运", "left_row": 16 },
+    { "keywords": ["危险废弃物处置费"], "label": "危险废弃物", "left_row": 14 },
+    { "keywords": ["运（配）送服务费", "运配送服务费", "运送服务费"], "label": "运送服务费", "left_row": 8, "right_row": 8 },
+    { "keywords": ["电梯驾驶服务费"], "label": "电梯驾驶服务", "left_row": 6, "right_row": 6 },
+    { "keywords": ["被服洗涤费"], "label": "被服洗涤", "left_row": 10, "right_row": 10 },
+    { "keywords": ["会务服务费"], "label": "会务", "left_row": 11 },
+    { "keywords": ["交通管理服务费"], "label": "交通管理服务费", "left_row": 17 },
+    { "keywords": ["绿化服务费"], "label": "绿化", "left_row": 12 },
+    { "keywords": ["物业管理其他费", "物业管理其他"], "label": "物业管理其他", "left_row": 18 }
+  ],
+
+  "exclude_keywords": [
+    "维修维护", "维修维保",
+    "空调运行管理", "电站运行管理", "通用设施设备",
+    "物业维修服务", "污水处理站运行管理", "污水管线养护",
+    "医用气体运行管理", "后勤智能化平台", "给排水锅炉运行管理",
+    "电梯运行管理"
+  ],
+
+  "targets": {
+    "property_sheet": "物业管理",
+    "service_sheet": "商品服务",
+    "service_total_row": 7,
+    "service_total_cols": { "current": 2, "fengxian": 3, "prev": 4 },
+    "left_table": {
+      "col_offset": 0,
+      "data_cols": { "current": 2, "fengxian": 3, "prev": 4 },
+      "calc_cols": { "diff": 5, "rate": 6 },
+      "total_row": 5,
+      "remainder_row": 18
+    },
+    "right_table": {
+      "col_offset": 8,
+      "data_cols": { "current": 9, "fengxian": 10, "prev": 11 },
+      "calc_cols": { "diff": 12, "rate": 13 },
+      "total_row": 5,
+      "remainder_row": 11
+    }
+  },
+
+  "maintenance": {
+    "_description": "维修费分析 — 按科目名称一级分类 + 按运营成本二级分类",
+    "code_marker": "0412",
+    "wan_divisor": 10000,
+
+    "service_sheet": {
+      "sheet": "商品服务",
+      "total_row": 6,
+      "data_cols": { "current": 2, "fengxian": 3, "prev": 4 }
+    },
+
+    "top_level": {
+      "_description": "维修费一级分类 → 维修护费 sheet",
+      "sheet": "维修护费",
+      "search_col": 1,
+      "data_cols": { "current": 2, "fengxian": 3, "prev": 4 },
+      "categories": [
+        { "keywords": ["网络信息系统运行与维护费"], "label": "网络维修", "expected_row": 4 },
+        { "keywords": ["设备日常维修"], "label": "设备维修", "expected_row": 5 },
+        { "keywords": ["房屋日常维修"], "label": "房屋维修", "expected_row": 7 }
+      ],
+      "logistics_entry": {
+        "_description": "后勤维修行 — 科目名称='其他'且科目编码以04结尾",
+        "label": "后勤维修",
+        "expected_row": 6,
+        "keyword": "其他",
+        "code_ends_with": "04"
+      }
+    },
+
+    "logistics_repair": {
+      "_description": "后勤维修二级分类 → 后勤维修 sheet",
+      "sheet": "后勤维修",
+      "left_block": {
+        "_description": "左表 (C-J列) — 当月及上年同期详细分类",
+        "search_col": 2,
+        "data_cols": { "current": 3, "fengxian": 4, "prev": 5 },
+        "total_row": 5,
+        "remainder_row": 16,
+        "sub_categories": [
+          { "keywords": ["物业维修服务费"], "label": "物业维修", "expected_row": 6 },
+          { "keywords": ["电梯运行管理费"], "label": "电梯运行", "expected_row": 7 },
+          { "keywords": ["通用设施设备管理"], "label": "通用设施", "expected_row": 8 },
+          { "keywords": ["空调运行管理费"], "label": "空调运行管理费", "expected_row": 9 },
+          { "keywords": ["电站运行管理费"], "label": "电站运行", "expected_row": 10 },
+          { "keywords": ["给排水锅炉运行管理费"], "label": "给排水锅炉", "expected_row": 11 },
+          { "keywords": ["后勤智能化平台"], "label": "后勤智能化", "expected_row": 12 },
+          { "keywords": ["污水处理站运行管理费"], "label": "污水处理站", "expected_row": 13 },
+          { "keywords": ["污水管线养护费"], "label": "污水管线", "expected_row": 14 },
+          { "keywords": ["医用气体运行管理费"], "label": "医用气体", "expected_row": 15 }
+        ],
+        "fallback_label": "其他"
+      },
+      "right_block": {
+        "_description": "右表 (K-P列) — 简化分类，仅3个显式子项+其他公式",
+        "search_col": 10,
+        "data_cols": { "current": 11, "fengxian": 12, "prev": 13 },
+        "total_row": 5,
+        "remainder_row": 9,
+        "sub_categories": [
+          { "keywords": ["物业维修服务费"], "label": "物业维修", "expected_row": 6, "data_key": "物业维修" },
+          { "keywords": ["通用设施设备管理"], "label": "通用设施设备管理", "expected_row": 7, "data_key": "通用设施" },
+          { "keywords": ["空调运行管理费"], "label": "空调运行管理费", "expected_row": 8, "data_key": "空调运行管理费" }
+        ]
+      }
+    }
+  }
+}
