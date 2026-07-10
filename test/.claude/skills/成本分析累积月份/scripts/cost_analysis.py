@@ -41,12 +41,13 @@ def detect_data_month(excel_path):
 class ExcelDataLoader:
     """加载 Excel 所有 sheet，建立 {source_alias: {normalized_label: {col_idx: value}}} 索引."""
 
-    def __init__(self, excel_path, sources_config):
+    def __init__(self, excel_path, sources_config, cumulative=False):
         self.excel_path = excel_path
         self.sources = sources_config
         self.cache = {}       # source_alias -> {label -> {col: value}}
         self.needs_wan = {}   # source_alias -> bool
         self.label_col = {}   # source_alias -> int
+        self.cumulative = cumulative  # True=取累计数列(col 2), False=取本月数列(col 1)
         self._load_all()
 
     @staticmethod
@@ -183,13 +184,13 @@ class ExcelDataLoader:
         cache = self.cache.get("医疗成本", {})
         if not cache:
             return
-        # Check if key data rows are empty
-        if not self._is_row_empty(cache, "人员经费", [2, 4, 6]):
-            return
         print("  [REPAIR] 医疗成本: populating from 附表2 sources...")
         cache = self.cache.get("医疗成本", {})
         if not cache:
             return
+
+        # cumulative: col 2 = 累计数, col 1 = 本月数
+        val_col = 2 if self.cumulative else 1
 
         row_map = {
             "人员经费": "1.人员经费",
@@ -205,9 +206,9 @@ class ExcelDataLoader:
             if row is None:
                 continue
             # Col 2: 当月医院, Col 4: 奉贤, Col 6: 同期
-            cur = self._get_from_cache("当月附表2-成本", xlbl, 1)
-            fx = self._get_from_cache("当月奉贤附表2-成本", xlbl, 1)
-            prev = self._get_from_cache("上年同期附表2-成本", xlbl, 1)
+            cur = self._get_from_cache("当月附表2-成本", xlbl, val_col)
+            fx = self._get_from_cache("当月奉贤附表2-成本", xlbl, val_col)
+            prev = self._get_from_cache("上年同期附表2-成本", xlbl, val_col)
             if cur is not None:
                 row[2] = cur
             if fx is not None:
@@ -216,15 +217,15 @@ class ExcelDataLoader:
                 row[6] = prev
             # Col 3/5/7: 占比%
             if cur is not None:
-                total_cur = self._get_from_cache("当月附表2-成本", "一、医疗成本", 1)
+                total_cur = self._get_from_cache("当月附表2-成本", "一、医疗成本", val_col)
                 if total_cur and total_cur != 0:
                     row[3] = cur / total_cur
             if fx is not None:
-                total_fx = self._get_from_cache("当月奉贤附表2-成本", "一、医疗成本", 1)
+                total_fx = self._get_from_cache("当月奉贤附表2-成本", "一、医疗成本", val_col)
                 if total_fx and total_fx != 0:
                     row[5] = fx / total_fx
             if prev is not None:
-                total_prev = self._get_from_cache("上年同期附表2-成本", "一、医疗成本", 1)
+                total_prev = self._get_from_cache("上年同期附表2-成本", "一、医疗成本", val_col)
                 if total_prev and total_prev != 0:
                     row[7] = prev / total_prev
             # Col 8: 增减额 = cur - prev
@@ -238,23 +239,23 @@ class ExcelDataLoader:
         row = self._fuzzy_get(cache, "折旧/摊销")
         if row is not None:
             for src_name, col_idx in [("当月附表2-成本", 2), ("当月奉贤附表2-成本", 4), ("上年同期附表2-成本", 6)]:
-                d1 = self._get_from_cache(src_name, "4.固定资产折旧费", 1)
-                d2 = self._get_from_cache(src_name, "5.无形资产摊销费", 1)
+                d1 = self._get_from_cache(src_name, "4.固定资产折旧费", val_col)
+                d2 = self._get_from_cache(src_name, "5.无形资产摊销费", val_col)
                 if d1 is not None and d2 is not None:
                     row[col_idx] = d1 + d2
             # Compute derived columns for 折旧/摊销
             cur = row.get(2)
             prev = row.get(6)
             if cur is not None:
-                total_cur = self._get_from_cache("当月附表2-成本", "一、医疗成本", 1)
+                total_cur = self._get_from_cache("当月附表2-成本", "一、医疗成本", val_col)
                 if total_cur and total_cur != 0:
                     row[3] = cur / total_cur
             if row.get(4) is not None:
-                total_fx = self._get_from_cache("当月奉贤附表2-成本", "一、医疗成本", 1)
+                total_fx = self._get_from_cache("当月奉贤附表2-成本", "一、医疗成本", val_col)
                 if total_fx and total_fx != 0:
                     row[5] = row[4] / total_fx
             if prev is not None:
-                total_prev = self._get_from_cache("上年同期附表2-成本", "一、医疗成本", 1)
+                total_prev = self._get_from_cache("上年同期附表2-成本", "一、医疗成本", val_col)
                 if total_prev and total_prev != 0:
                     row[7] = prev / total_prev
             if cur is not None and prev is not None:
@@ -269,28 +270,31 @@ class ExcelDataLoader:
         cache = self.cache.get("人员经费", {})
         if not cache:
             return
-        if not self._is_row_empty(cache, "人员经费", [2, 3, 4]):
-            return
         print("  [REPAIR] 人员经费: populating from 附表3 sources...")
         cache = self.cache.get("人员经费", {})
         if not cache:
             return
+
+        # cumulative: col 2 = 累计数, col 1 = 本月数; 上年同期附表3 col 4/6 = 累计, col 3/5 = 本月
+        val_col = 2 if self.cumulative else 1
+        prev_col3 = 4 if self.cumulative else 3  # 上年同期附表3: 业务活动费累计/本月
+        prev_col5 = 6 if self.cumulative else 5  # 上年同期附表3: 单位管理费累计/本月
 
         # 医疗服务收入 → 一、医疗收入 from 附表2 (income side)
         row = self._fuzzy_get(cache, "医疗服务收入")
         if row is not None:
             for src, lbl, col_idx in [("当月附表2", "一、医疗收入", 2), ("当月奉贤附表2", "一、医疗收入", 3),
                                        ("上年同期附表2", "一、医疗收入", 4)]:
-                v = self._get_from_cache(src, lbl, 1)
+                v = self._get_from_cache(src, lbl, val_col)
                 if v is not None:
                     row[col_idx] = v
 
         # 人员经费
         row = self._fuzzy_get(cache, "人员经费")
         if row is not None:
-            cur = self._get_from_cache("当月附表3", "（一）人员经费", 1)
-            fx = self._get_from_cache("当月奉贤附表3", "（一）人员经费", 1)
-            prev = self._get_from_cache("上年同期附表2-成本", "1.人员经费", 1)
+            cur = self._get_from_cache("当月附表3", "（一）人员经费", val_col)
+            fx = self._get_from_cache("当月奉贤附表3", "（一）人员经费", val_col)
+            prev = self._get_from_cache("上年同期附表2-成本", "1.人员经费", val_col)
             if cur is not None:
                 row[2] = cur
             if fx is not None:
@@ -303,12 +307,12 @@ class ExcelDataLoader:
         row = self._fuzzy_get(cache, "其中：工资总额")
         if row is not None:
             cur_total = sum(
-                (self._get_from_cache_no_wan("当月附表3", p, 1) or 0) for p in wage_parts) / 10000.0
+                (self._get_from_cache_no_wan("当月附表3", p, val_col) or 0) for p in wage_parts) / 10000.0
             fx_total = sum(
-                (self._get_from_cache_no_wan("当月奉贤附表3", p, 1) or 0) for p in wage_parts) / 10000.0
+                (self._get_from_cache_no_wan("当月奉贤附表3", p, val_col) or 0) for p in wage_parts) / 10000.0
             prev_total = sum(
-                (self._get_from_cache_no_wan("上年同期附表3", p, 3) or 0) +
-                (self._get_from_cache_no_wan("上年同期附表3", p, 5) or 0)
+                (self._get_from_cache_no_wan("上年同期附表3", p, prev_col3) or 0) +
+                (self._get_from_cache_no_wan("上年同期附表3", p, prev_col5) or 0)
                 for p in wage_parts) / 10000.0
             row[2] = cur_total
             row[3] = fx_total
@@ -319,12 +323,12 @@ class ExcelDataLoader:
         row = self._fuzzy_get(cache, "其中：基本工资等")
         if row is not None:
             cur_total = sum(
-                (self._get_from_cache_no_wan("当月附表3", p, 1) or 0) for p in base_parts) / 10000.0
+                (self._get_from_cache_no_wan("当月附表3", p, val_col) or 0) for p in base_parts) / 10000.0
             fx_total = sum(
-                (self._get_from_cache_no_wan("当月奉贤附表3", p, 1) or 0) for p in base_parts) / 10000.0
+                (self._get_from_cache_no_wan("当月奉贤附表3", p, val_col) or 0) for p in base_parts) / 10000.0
             prev_total = sum(
-                (self._get_from_cache_no_wan("上年同期附表3", p, 3) or 0) +
-                (self._get_from_cache_no_wan("上年同期附表3", p, 5) or 0)
+                (self._get_from_cache_no_wan("上年同期附表3", p, prev_col3) or 0) +
+                (self._get_from_cache_no_wan("上年同期附表3", p, prev_col5) or 0)
                 for p in base_parts) / 10000.0
             row[2] = cur_total
             row[3] = fx_total
@@ -333,10 +337,10 @@ class ExcelDataLoader:
         # 绩效工资
         row = self._fuzzy_get(cache, "绩效工资")
         if row is not None:
-            cur = self._get_from_cache("当月附表3", "绩效工资", 1)
-            fx = self._get_from_cache("当月奉贤附表3", "绩效工资", 1)
-            prev = (self._get_from_cache_no_wan("上年同期附表3", "绩效工资", 3) or 0) + \
-                   (self._get_from_cache_no_wan("上年同期附表3", "绩效工资", 5) or 0)
+            cur = self._get_from_cache("当月附表3", "绩效工资", val_col)
+            fx = self._get_from_cache("当月奉贤附表3", "绩效工资", val_col)
+            prev = (self._get_from_cache_no_wan("上年同期附表3", "绩效工资", prev_col3) or 0) + \
+                   (self._get_from_cache_no_wan("上年同期附表3", "绩效工资", prev_col5) or 0)
             prev = prev / 10000.0
             if cur is not None:
                 row[2] = cur
@@ -351,12 +355,12 @@ class ExcelDataLoader:
         row = self._fuzzy_get(cache, "社保公积金")
         if row is not None:
             cur_total = sum(
-                (self._get_from_cache_no_wan("当月附表3", p, 1) or 0) for p in insurance_parts) / 10000.0
+                (self._get_from_cache_no_wan("当月附表3", p, val_col) or 0) for p in insurance_parts) / 10000.0
             fx_total = sum(
-                (self._get_from_cache_no_wan("当月奉贤附表3", p, 1) or 0) for p in insurance_parts) / 10000.0
+                (self._get_from_cache_no_wan("当月奉贤附表3", p, val_col) or 0) for p in insurance_parts) / 10000.0
             prev_total = sum(
-                (self._get_from_cache_no_wan("上年同期附表3", p, 3) or 0) +
-                (self._get_from_cache_no_wan("上年同期附表3", p, 5) or 0)
+                (self._get_from_cache_no_wan("上年同期附表3", p, prev_col3) or 0) +
+                (self._get_from_cache_no_wan("上年同期附表3", p, prev_col5) or 0)
                 for p in insurance_parts) / 10000.0
             row[2] = cur_total
             row[3] = fx_total
@@ -484,7 +488,9 @@ class ExcelDataLoader:
         print("  [REPAIR] 商品服务: populating from 附表3...")
 
         # Helper: read value from 附表3 and convert to 万元
-        def _read_s3(s3_alias, label, col=1):
+        # cumulative: col 2 = 累计数, col 1 = 本月数
+        _s3_val_col = 2 if self.cumulative else 1
+        def _read_s3(s3_alias, label, col=_s3_val_col):
             """Read a value from a 附表3 cache, already in 万元 (needs_wan=true source)."""
             val = self._get_from_cache_no_wan(s3_alias, label, col)
             if isinstance(val, (int, float)):
@@ -881,6 +887,9 @@ class ExcelDataLoader:
         import openpyxl
         wb = openpyxl.load_workbook(self.excel_path, data_only=True)
 
+        val_col = 2 if self.cumulative else 1  # 累计模式取 col 2，单月模式取 col 1
+        col_label = "累计数" if self.cumulative else "本月数"
+
         for src_alias in ["当月附表2", "当月奉贤附表2", "上年同期附表2"]:
             cache = self.cache.get(src_alias, {})
             if not cache:
@@ -898,16 +907,16 @@ class ExcelDataLoader:
             for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=ws.max_column):
                 label = self._norm(row[label_col].value)
                 if label == '化验收入':
-                    val = row[1].value  # col B (index 1) = 当月
+                    val = row[val_col].value  # 累计模式取 col 2（累计数），单月模式取 col 1（本月数）
                     if isinstance(val, (int, float)):
                         total += val
 
             if total > 0:
                 row_data = cache.get('化验收入', {})
-                old_val = row_data.get(1, 0)
-                row_data[1] = total
+                old_val = row_data.get(val_col, 0)
+                row_data[val_col] = total
                 cache['化验收入'] = row_data
-                print(f"  [REPAIR] {src_alias} 化验收入: {old_val:.2f} → {total:.2f}"
+                print(f"  [REPAIR] {src_alias} 化验收入({col_label}): {old_val:.2f} → {total:.2f}"
                       f" (门急诊+住院合计, diff={total - old_val:.2f})")
 
         wb.close()
@@ -1053,10 +1062,11 @@ class MaterialDetailLoader:
 class ComputedValueResolver:
     """Resolves computed column and text variable specifications."""
 
-    def __init__(self, loader, data_month=None, detail_loader=None):
+    def __init__(self, loader, data_month=None, detail_loader=None, cumulative=False):
         self.loader = loader
         self.data_month = data_month or 4
         self.detail_loader = detail_loader
+        self.cumulative = cumulative  # True=累计模式: detail_sum 汇总1月至当月所有期间
 
     def resolve(self, compute_spec, resolved_cols=None, row_values=None):
         ctype = compute_spec["type"]
@@ -1151,15 +1161,30 @@ class ComputedValueResolver:
                 return None
             year = compute_spec["year"]
             month = compute_spec.get("month", self.data_month)
-            period = f"{year}-{month:02d}"
-            raw = self.detail_loader.aggregate(
-                year=year,
-                chargeable=compute_spec.get("chargeable"),
-                subject_contains=compute_spec.get("subject_contains"),
-                dept_contains=compute_spec.get("dept_contains"),
-                campus=compute_spec.get("campus"),
-                period=period,
-            )
+            if self.cumulative or compute_spec.get("cumulative", False):
+                # 累计模式: 汇总 1月至当月所有期间数据
+                # 生成期间列表 ["2026-01", "2026-02", ..., "2026-0N"]
+                raw = 0.0
+                for m in range(1, month + 1):
+                    period = f"{year}-{m:02d}"
+                    raw += self.detail_loader.aggregate(
+                        year=year,
+                        chargeable=compute_spec.get("chargeable"),
+                        subject_contains=compute_spec.get("subject_contains"),
+                        dept_contains=compute_spec.get("dept_contains"),
+                        campus=compute_spec.get("campus"),
+                        period=period,
+                    )
+            else:
+                period = f"{year}-{month:02d}"
+                raw = self.detail_loader.aggregate(
+                    year=year,
+                    chargeable=compute_spec.get("chargeable"),
+                    subject_contains=compute_spec.get("subject_contains"),
+                    dept_contains=compute_spec.get("dept_contains"),
+                    campus=compute_spec.get("campus"),
+                    period=period,
+                )
             if compute_spec.get("needs_wan", False):
                 raw = raw / 10000.0
             return raw
@@ -1430,15 +1455,16 @@ class ValueFormatter:
 class CostAnalysisUpdater:
     """主控制器：根据 mapping 更新 PPT."""
 
-    def __init__(self, excel_path, pptx_path, mapping_path):
+    def __init__(self, excel_path, pptx_path, mapping_path, cumulative=False):
         self.excel_path = excel_path
         self.pptx_path = pptx_path
         self.mapping_path = mapping_path
+        self.cumulative = cumulative
 
         with open(mapping_path, 'r', encoding='utf-8') as f:
             self.mapping = json.load(f)
 
-        self.loader = ExcelDataLoader(excel_path, self.mapping.get("excel_sources", {}))
+        self.loader = ExcelDataLoader(excel_path, self.mapping.get("excel_sources", {}), cumulative=cumulative)
         self.prs = Presentation(pptx_path)
         self.finder = PPTTableFinder()
         self.formatter = ValueFormatter()
@@ -1457,7 +1483,7 @@ class CostAnalysisUpdater:
         if self.detail_loader is None:
             print("  [DETAIL] No detail file found, detail_sum compute type will return None")
 
-        self.resolver = ComputedValueResolver(self.loader, self.data_month, self.detail_loader)
+        self.resolver = ComputedValueResolver(self.loader, self.data_month, self.detail_loader, cumulative=cumulative)
         self.text_updater = TextUpdater()
 
         self.stats = {"updated_cells": 0, "skipped_rows": 0, "skipped_cells": 0, "slides_processed": 0}
@@ -1634,7 +1660,7 @@ def main():
     print(f"Mapping: {args.mapping}")
     print()
 
-    updater = CostAnalysisUpdater(args.excel, args.pptx, args.mapping)
+    updater = CostAnalysisUpdater(args.excel, args.pptx, args.mapping, cumulative=True)
     updater.run(args.output)
 
 

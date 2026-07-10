@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """
-新华医院物业管理费及维修费分析 — 从物业及维修明细 Excel 更新分析底稿。
+新华医院物业管理费及维修费分析（累积月份） — 从本年累计及上年同期累计物业维修明细 Excel 更新分析底稿。
+
+本脚本处理的是累积数据（1月至当前月份的所有交易明细），与单月版本的区别：
+- 输入文件包含的是 1月到当前月份的累计交易数据，而非仅当月数据
+- 汇总后写入底稿的数据反映的是本年累计 vs 上年同期累计的对比
 
 用法:
-    python property_analysis.py <本年明细文件> <上年明细文件> <分析底稿> [--output OUTPUT] [--mode MODE]
+    python property_analysis.py <本年累计明细文件> <上年同期累计明细文件> <分析底稿> [--output OUTPUT] [--mode MODE]
 
-    --mode property    : 仅更新物业管理费（原有功能）
+    --mode property    : 仅更新物业管理费
     --mode maintenance : 仅更新维修费
     --mode all         : 同时更新物业管理费和维修费（默认）
 
 示例:
-    python property_analysis.py 202604物业及维修.xlsx 202504物业及维修.xls 4月分析底稿.xlsx
+    python property_analysis.py 2026年1-6月物业维修费.xlsx 2025年1-6月物业维修费.xls 6月分析底稿.xlsx
 """
 
 import json
@@ -750,9 +754,9 @@ def update_logistics_repair_sheet(wb, data_log_current, data_log_prev, mt_config
 
 def main():
     parser = argparse.ArgumentParser(
-        description="新华医院物业管理费及维修费分析 — 从物业明细更新分析底稿")
-    parser.add_argument("current_file", help="本年当月物业及维修明细 Excel 文件")
-    parser.add_argument("prev_file", help="上年同期物业及维修明细 Excel 文件")
+        description="新华医院物业管理费及维修费分析（累积月份） — 从累计物业明细更新分析底稿")
+    parser.add_argument("current_file", help="本年累计物业及维修明细 Excel 文件（1月至当前月份）")
+    parser.add_argument("prev_file", help="上年同期累计物业及维修明细 Excel 文件（1月至当前月份）")
     parser.add_argument("workbook", help="分析底稿 Excel 文件")
     parser.add_argument("--output", "-o", default=None, help="输出路径（默认在底稿名加日期后缀）")
     parser.add_argument("--mapping", "-m", default=None, help="category_mapping.json 路径")

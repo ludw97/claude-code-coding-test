@@ -1,0 +1,18 @@
+# Excel files
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+*.xltx
+*.xltm
+*.xlw
+*.csv
+
+# PowerPoint files
+*.pptx
+*.ppt
+*.pptm
+*.ppsx
+*.ppsm
+*.potx
+*.potm
